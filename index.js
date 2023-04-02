@@ -1,23 +1,12 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const dbConnect = require("./dbconnect");
-//const authRouter = require("./routers/authRouter");
-//const postsRouter = require("./routers/postsRouter");
 const router = require("./routers/router");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-// const cloudinary = require("cloudinary").v2;
 
 dotenv.config("./.env");
-
-// Configuration
-// cloudinary.config({
-//     secure: true,
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLOUDINARY_API_KEY,
-//     api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
 
 const app = express();
 
@@ -25,23 +14,23 @@ const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(morgan("common"));
 //app.use(cookieParser());
-let origin = 'http://localhost:3000';
+// let origin = 'http://localhost:3000';
+
+let origin = 'https://wondrous-alfajores-7e4040.netlify.app/';
 console.log(origin);
-//let origin = 'https://idyllic-buttercream-122926.netlify.app';
-//console.log('here env', process.env.NODE_ENV);
 // if(process.env.NODE_ENV === 'production') {
 //    origin = process.env.CLIENT_ORIGIN;
     
 // }
-app.use(
-    cors({
-        credentials: true,
-        origin
-    })
-);
+// app.use(
+//     cors({
+//         credentials: true,
+//         origin
+//     })
+// );
 
-// app.use("/auth", authRouter);
-// app.use("/posts", postsRouter);
+app.use(cors());
+
 app.use("/catId", router );
 
 app.get("/", (req, res) => {
