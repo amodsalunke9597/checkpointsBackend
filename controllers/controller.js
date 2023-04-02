@@ -66,11 +66,9 @@ const updateExistingCatalogueId = async (req, res) => {
 
       // If the catalogue exists, update it with the new checkpoints
       if (catalogue) {
-        catalogue.checkpoints = { ...catalogue.checkpoints, ...checkpoints };
-        await catalogue.save();
+          catalogue.checkpoints = checkpoints;
+          await catalogue.save();
       } 
-      
-      
       // If the catalogue doesn't exist, create it
       else {
         return res.send(error(400, 'nothing to update in checkpoints'));
@@ -91,18 +89,17 @@ const getCatalogueId = async (req, res, next) => {
     const { catalogueId } = req.body;
     const catalogue = await Catalogue.findOne({ catalogueId });
     if (!catalogue) {
-      return res.status(404).json({ status: "error", message: `Catalogue with ID ${catalogueId} not found` });
+        throw new Error(`Catalogue with ID ${catalogueId} not found`);
     }
 
-    const checkpoints = catalogue.checkpoints;
+    const checkpoints = catalogue.checkpoints
 
-    res.json({ status: "ok", statusCode: 200, result: { checkpoints } });
-  } catch (err) {
+    res.json({checkpoints});
+} catch (err) {
     console.error(`Error getting catalogue checkpoints: ${err}`);
-    return res.status(500).json({ status: "error", message: err.message });
-  }
+    res.status(404).json({ message: err.message });
+}
 };
-
 
 const getAllCatalogues = async (req, res) => {
   try {
