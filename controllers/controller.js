@@ -58,16 +58,19 @@ const updateCatalogueId = async (req, res) => {
 // Get a catalog ID by catalogue ID
 const getCatalogueId = async (req, res, next) => {
   try {
-    const {catalogueId} = req.body;
+    const { catalogueId } = req.body;
     const catalogue = await Catalogue.findOne({ catalogueId });
     if (!catalogue) {
-      throw new Error(`Catalogue with ID ${catalogueId} not found`);
+        throw new Error(`Catalogue with ID ${catalogueId} not found`);
     }
-    res.json(catalogue);
-  } catch (err) {
+
+    const checkpoints = catalogue.checkpoints
+
+    res.json({checkpoints});
+} catch (err) {
     console.error(`Error getting catalogue checkpoints: ${err}`);
     res.status(404).json({ message: err.message });
-  }
+}
 }
 
 
