@@ -52,6 +52,36 @@ const updateCatalogueId = async (req, res) => {
     }
 };
 
+//it is to update catalogue ID
+const updateExistingCatalogueId = async (req, res) => {
+  try {
+      let { catalogueId, checkpoints } = req.body;
+
+      if (!catalogueId) {
+          return res.send(error(400, 'Catalogue ID is required'));
+      }
+
+      // Check if the provided ID already exists in the database
+      let catalogue = await Catalogue.findOne({ catalogueId });
+
+      // If the catalogue exists, update it with the new checkpoints
+      if (catalogue) {
+        catalogue.checkpoints = { ...catalogue.checkpoints, ...checkpoints };
+        await catalogue.save();
+      } 
+      
+      
+      // If the catalogue doesn't exist, create it
+      else {
+        return res.send(error(400, 'nothing to update in checkpoints'));
+      }
+
+      return res.json(success(200, { catalogue }));
+  } catch (e) {
+    console.log(e);
+      return res.send(error(500, e.message));
+  }
+};
 
   
 
@@ -61,17 +91,18 @@ const getCatalogueId = async (req, res, next) => {
     const { catalogueId } = req.body;
     const catalogue = await Catalogue.findOne({ catalogueId });
     if (!catalogue) {
-        throw new Error(`Catalogue with ID ${catalogueId} not found`);
+      return res.status(404).json({ status: "error", message: `Catalogue with ID ${catalogueId} not found` });
     }
 
-    const checkpoints = catalogue.checkpoints
+    const checkpoints = catalogue.checkpoints;
 
-    res.json({checkpoints});
-} catch (err) {
+    res.json({ status: "ok", statusCode: 200, result: { checkpoints } });
+  } catch (err) {
     console.error(`Error getting catalogue checkpoints: ${err}`);
-    res.status(404).json({ message: err.message });
-}
+    return res.status(500).json({ status: "error", message: err.message });
+  }
 };
+
 
 const getAllCatalogues = async (req, res) => {
   try {
@@ -96,6 +127,7 @@ const getAllCatalogues = async (req, res) => {
 module.exports = {
     createCatalogueId,
     updateCatalogueId,
+    updateExistingCatalogueId,
     getCatalogueId,
     getAllCatalogues
 };
