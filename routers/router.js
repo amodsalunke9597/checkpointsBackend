@@ -4,5 +4,6 @@ const Controller = require("../controllers/controller");
 router.post("/createCatId", Controller.createCatalogueId);
 router.post("/updateCatId", Controller.updateCatalogueId);
 router.post("/getCatId", Controller.getCatalogueId);
+router.post("/getAllCatId", Controller.getAllCatalogues);
 
 module.exports = router;

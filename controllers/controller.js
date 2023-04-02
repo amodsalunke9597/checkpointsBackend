@@ -71,7 +71,24 @@ const getCatalogueId = async (req, res, next) => {
     console.error(`Error getting catalogue checkpoints: ${err}`);
     res.status(404).json({ message: err.message });
 }
-}
+};
+
+const getAllCatalogues = async (req, res) => {
+  try {
+    const catalogues = await Catalogue.find();
+    const catalogueData = catalogues.map((catalogue) => {
+      return {
+        catalogueId: catalogue.catalogueId,
+        checkpoints: catalogue.checkpoints
+      };
+    });
+    res.json({catalogueData});
+  } catch (err) {
+    console.error(`Error getting all catalogues: ${err}`);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 
   
@@ -80,4 +97,5 @@ module.exports = {
     createCatalogueId,
     updateCatalogueId,
     getCatalogueId,
+    getAllCatalogues
 };
