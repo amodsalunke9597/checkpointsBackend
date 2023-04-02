@@ -22,16 +22,16 @@ console.log(origin);
 //    origin = process.env.CLIENT_ORIGIN;
     
 // }
-// app.use(
-//     cors({
-//         credentials: true,
-//         origin
-//     })
-// );
+app.use(
+    cors({
+        credentials: true,
+        origin
+    })
+);
 
-app.use(cors({
-    credentials: true
-}));
+// app.use(cors({
+//     credentials: true
+// }));
 
 app.use("/catId", router );
 
