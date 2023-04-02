@@ -16,7 +16,7 @@ app.use(morgan("common"));
 //app.use(cookieParser());
 // let origin = 'http://localhost:3000';
 
-let origin = 'https://wondrous-alfajores-7e4040.netlify.app/';
+let origin = 'https://wondrous-alfajores-7e4040.netlify.app';
 console.log(origin);
 // if(process.env.NODE_ENV === 'production') {
 //    origin = process.env.CLIENT_ORIGIN;
