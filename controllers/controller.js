@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 const Catalogue = require('../models/User');
 
-// Create a new catalog ID and add checkpoints
+// Create a new catalog ID and add checkpoints this is no more relevant and removed from frontend
 const createCatalogueId = async (req, res) => {
     try {
       const { catalogueId } = req.body;
@@ -23,13 +23,17 @@ const createCatalogueId = async (req, res) => {
   
 };
 
-
+// this is creating a catId actually
 const updateCatalogueId = async (req, res) => {
     try {
         let { catalogueId, checkpoints } = req.body;
 
-        if (!catalogueId) {
+        if (!catalogueId ) {
             return res.send(error(400, 'Catalogue ID is required'));
+        }
+
+        if(!checkpoints){
+          return res.send(error(400, 'chekpoints are required'));
         }
 
         // Check if the provided ID already exists in the database
@@ -58,6 +62,10 @@ const updateExistingCatalogueId = async (req, res) => {
 
       if (!catalogueId) {
           return res.send(error(400, 'Catalogue ID is required'));
+      }
+
+      if(!checkpoints){
+        return res.send(error(400, 'chekpoints are required'));
       }
 
       // Check if the provided ID already exists in the database
