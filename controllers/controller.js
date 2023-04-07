@@ -52,7 +52,6 @@ const updateCatalogueId = async (req, res) => {
     }
 };
 
-//it is to update catalogue ID
 const updateExistingCatalogueId = async (req, res) => {
   try {
       let { catalogueId, checkpoints } = req.body;
@@ -66,20 +65,40 @@ const updateExistingCatalogueId = async (req, res) => {
 
       // If the catalogue exists, update it with the new checkpoints
       if (catalogue) {
-          catalogue.checkpoints = checkpoints;
+          catalogue.checkpoints.push(...checkpoints);
+          //catalogue.checkpoints = [...catalogue.checkpoints, ...checkpoints]; // add the new checkpoints to the existing ones
           await catalogue.save();
       } 
-      // If the catalogue doesn't exist, create it
+      // If the catalogue doesn't exist, return an error
       else {
-        return res.send(error(400, 'nothing to update in checkpoints'));
+          return res.send(error(400, 'Catalogue does not exist'));
       }
 
       return res.json(success(200, { catalogue }));
   } catch (e) {
-    console.log(e);
+      console.log(e);
       return res.send(error(500, e.message));
   }
 };
+
+
+const deleteCatalogueId = async (req, res) => {
+  try {
+    const { catalogueId } = req.body;
+    let catalog = await Catalogue.findOne({ catalogueId });
+    if (catalog) {
+      await catalog.deleteOne();
+      res.status(200).json({ msg: 'Catalogue deleted successfully', catalogueId });
+    } else {
+      res.status(404).json({ msg: 'Catalogue not found', catalogueId });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+
 
   
 
@@ -126,5 +145,6 @@ module.exports = {
     updateCatalogueId,
     updateExistingCatalogueId,
     getCatalogueId,
-    getAllCatalogues
+    getAllCatalogues,
+    deleteCatalogueId
 };
