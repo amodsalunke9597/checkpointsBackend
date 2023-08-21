@@ -3,28 +3,9 @@ const User = require("../models/User");
 
 const Catalogue = require('../models/User');
 
-// Create a new catalog ID and add checkpoints this is no more relevant and removed from frontend
-const createCatalogueId = async (req, res) => {
-    try {
-      const { catalogueId } = req.body;
-      let catalog = await Catalogue.findOne({ catalogueId });
-      if (catalog) {
-        return res.status(400).json({ msg: 'Catalogue already exists' });
-      }
-  
-      catalog = new Catalogue({ catalogueId });
-      await catalog.save();
-  
-      res.status(200).json({ msg: 'Catalogue created successfully', catalog });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
-    }
-  
-};
 
 // this is creating a catId actually
-const updateCatalogueId = async (req, res) => {
+const CreateCatalogueId = async (req, res) => {
     try {
         let { catalogueId, checkpoints } = req.body;
 
@@ -52,7 +33,7 @@ const updateCatalogueId = async (req, res) => {
         return res.json(success(200, { catalogue }));
     } catch (e) {
       console.log(e);
-        return res.send(error(500, e.message));
+      return res.send(error(500, e.message));
     }
 };
 
@@ -149,8 +130,7 @@ const getAllCatalogues = async (req, res) => {
   
 
 module.exports = {
-    createCatalogueId,
-    updateCatalogueId,
+    CreateCatalogueId,
     updateExistingCatalogueId,
     getCatalogueId,
     getAllCatalogues,
