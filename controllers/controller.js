@@ -1,5 +1,7 @@
 const { error, success } = require("../utils/responseWrapper");
 const User = require("../models/User");
+const File = require("../models/File");
+const cloud = require('cloudinary').v2;
 
 const Catalogue = require('../models/User');
 
@@ -125,8 +127,186 @@ const getAllCatalogues = async (req, res) => {
   }
 };
 
+//now from here playing with the files
+const fileUpload = async(req, res) => {
+  try {
+    //fetch files
+    const file = req.files.file;
+    console.log('this is file', file);
+    
+    let path = __dirname + '/files/' + Date.now() + `.${file.name.split('.')[1]}`;
+    console.log('path => ',path);
+
+    file.mv(path, (err) => {
+      console.log(err);
+    })
+
+    res.json({
+      success:true,
+      message:'Local file uploaded successfully'
+    })
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function isFileSupported(type, supportedFile){
+  return supportedFile.includes(type);
+}
+
+async function uploadFileToCloudinary(file, folder, quality){
+  const options = {folder};
+  options.resource_type = "auto";
+
+  if(quality){
+    options.quality = quality;
+  }
+  return await cloud.uploader.upload(file.tempFilePath, options);
+}
+//image upload
+const imageUpload = async(req, res) => {
+  try {
+    const {name, tags, email} = req.body;
+    console.log(name, tags, email);
+
+    const file = req.files.imagefile;
+    console.log(file);
+
+    //validation
+    const supportedFile = ["jpg", "jpeg", "png"];
+    const fileType = file.name.split('.')[1].toLowerCase();
 
 
+    // if file format is not supported
+    if(!isFileSupported(fileType, supportedFile)){
+      return res.status(400).json({
+        success: false,
+        message: 'file format not supported'
+      })
+    }
+
+    //file format supported
+    const response = await uploadFileToCloudinary(file, "newFolder");
+    console.log(response);
+
+    //db me entry save
+    const fileData = await File.create({
+      name,
+      tags,
+      email,
+      imageUrl: response.secure_url
+    })
+    res.status(200).json({
+      success: true,
+      imageUrl: response.secure_url,
+      message: 'image saved successfully'
+    })
+
+
+  } catch (error) {
+    res.status(400).json({
+      success:false,
+      message: 'something went wrong'
+    })
+    console.log(error);
+  }
+}
+
+//video upload
+const videoUpload = async(req, res) => {
+  try {
+    //fetch used data
+    const {name, tags, email} = req.body;
+
+    const file = req.files.videoFile;
+
+     //validation
+     const supportedFile = ["mp4", "mov"];
+     const fileType = file.name.split('.')[1].toLowerCase();
+ 
+ 
+     // if file format is not supported
+     if(!isFileSupported(fileType, supportedFile)){
+       return res.status(400).json({
+         success: false,
+         message: 'file format not supported'
+       })
+     }
+
+      //file format supported
+    const response = await uploadFileToCloudinary(file, "newFolder");
+    console.log(response);
+
+    //db me entry save
+    const fileData = await File.create({
+      name,
+      tags,
+      email,
+      videoUrl: response.secure_url
+    })
+    res.status(200).json({
+      success: true,
+      videoUrl: response.secure_url,
+      message: 'image saved successfully'
+    })
+
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      success:false,
+      message: 'sonmething error happened in videoUpload'
+    })
+  }
+}
+
+//reduce image size
+const imageReducer = async(req, res) => {
+  try {
+    const {name, tags, email} = req.body;
+    console.log(name, tags, email);
+
+    const file = req.files.imagefile;
+    console.log(file);
+
+    //validation
+    const supportedFile = ["jpg", "jpeg", "png"];
+    const fileType = file.name.split('.')[1].toLowerCase();
+
+
+    // if file format is not supported
+    if(!isFileSupported(fileType, supportedFile)){
+      return res.status(400).json({
+        success: false,
+        message: 'file format not supported'
+      })
+    }
+
+    //file format supported
+    const response = await uploadFileToCloudinary(file, "newFolder", 80);
+    console.log(response);
+
+    //db me entry save
+    const fileData = await File.create({
+      name,
+      tags,
+      email,
+      imageUrl: response.secure_url
+    })
+    res.status(200).json({
+      success: true,
+      imageUrl: response.secure_url,
+      message: 'image saved successfully'
+    })
+
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      success:false,
+      message: 'something went wrong in image reducer'
+    })
+  }
+}
   
 
 module.exports = {
@@ -134,5 +314,9 @@ module.exports = {
     updateExistingCatalogueId,
     getCatalogueId,
     getAllCatalogues,
-    deleteCatalogueId
+    deleteCatalogueId,
+    fileUpload,
+    imageUpload,
+    videoUpload,
+    imageReducer
 };

@@ -1,5 +1,5 @@
 const express = require("express");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const dbConnect = require("./dbconnect");
 const router = require("./routers/router");
 const morgan = require("morgan");
@@ -9,10 +9,20 @@ const cors = require("cors");
 
 const app = express();
 
+
 //middlewares
 app.use(express.json({ limit: "10mb" }));
+const fileUpload = require('express-fileupload');
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}));
 app.use(morgan("common"));
 app.use(cookieParser());
+
+//cloudinary call from file
+const cloudinary = require('./config/cloudinari');
+cloudinary.cloudinaryConnect();
 
 //let origin = 'http://localhost:3000';
 let origin = 'https://phenomenal-moonbeam-716ff4.netlify.app';
